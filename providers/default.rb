@@ -22,9 +22,19 @@ require 'fileutils'
 def check_inputs user, group, foreign_template, foreign_vars
     # if group, user, and template are nil, throw an exception
   if user == nil and group == nil and foreign_template == nil
-    Chef::Application.fatal!("You must provide a user, group, or template")
+    fatal_message = "You must provide a user, group, or template"
+    if Chef.constants.any? {|clazz| Chef.const_get(clazz) == Chef::Application }
+      Chef::Application.fatal!(fatal_message)
+    else
+      raise fatal_message
+    end
   elsif user != nil and group != nil and template != nil
-    Chef::Application.fatal!("You cannot specify user, group, and template")
+    fatal_message = "You cannot specify user, group, and template"
+    if Chef.constants.any? {|clazz| Chef.const_get(clazz) == Chef::Application }
+      Chef::Application.fatal!(fatal_message)
+    else
+      raise fatal_message
+    end
   end
 end
 
@@ -33,7 +43,12 @@ def sudo_test tmpl_name
   unless cmd.exitstatus == 0
     Chef::Log.debug('sudoers fragment failed validation. Here it is for your viewing pleasure')
     Chef::Log.debug("\n" + ::File.open(tmpl_name).read + "\n")
-    Chef::Application.fatal!("sudoers template #{tmpl_name} failed parsing validation!")
+    fatal_message = "sudoers template #{tmpl_name} failed parsing validation!"
+    if Chef.constants.any? {|clazz| Chef.const_get(clazz) == Chef::Application }
+      Chef::Application.fatal!(fatal_message)
+    else
+      raise fatal_message
+    end
   end
 end
 
